@@ -1,59 +1,35 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Continuous Dynamical Systems
 
-def biff(q, rmin, rmax, stability, dr = 1e-4):
-    """
-        This function plots a biffrucation diagram of any single parameter
-        family given a parameter interval [rmin, rmax] overwich the system 
-        is either stable "s" or unstable "u". 
-        
-        If inputed wrong: nothing happens. 
-        
-        q must be a function of r
-    """
+"""
 
-    if(stability == "s" or stability =="u"):
-        r = np.arange(rmin, rmax + dr, dr)
-        if(stability == "s"):
-            plt.plot(r, q(r), "r")
-        elif(stability == "u"):
-            plt.plot(r, q(r), "r--")
-        return
-    else:
-        return
-        
+    --------------------------
+    DISCRETE DYNAMICAL SYSTEMS
+    --------------------------
 
-# Discrete Dynamical Systems
+"""       
         
-def iterate(f, x0, r, iterations, skip, xmin = 0, xmax = 1):
+def iterate(f, x0, r, tol, skip, xmin = 0, xmax = 1):
     """
-        Iterates a map f(r,x) until it settles and plots the result
+        Iterates a fxn f(r,x) until it settles and plots the result
+        
+        An iteration is f(f(f(....(x)...). until it settles to within a tolerance tol
+        or until it breaks a certain number of iterations skip
+        
     """
-    X_n=[]
-    N=[]
-    n=0
-    x = x0;
+    X =[x0, f(r, x0)]
+    n = 1
+    
     # Iterate the function until it settles.
     
-    for i in range(iterations + skip):
-        if i >= skip:
-            X_n.append(x)
-            N.append(n)
+    while(np.abs(X[-1] - X[-2]) > tol):
+        if n < skip:
+            X_n.append(f(r, X[-1]))
             n+=1
-            x = f(r, x);
-            # Configure and decorate the plot
-    plt.figure()
-    plt.grid()
-    plt.plot(N, X_n)
-    plt.ylim(xmin, xmax)
-    plt.xlim(0, N[-1])
-    plt.title("Iteration Diagram")
-    plt.xlabel("$n$")
-    plt.ylabel("$x_{n}$")
-    plt.show()
-    return
+       else: break
+    return X       
+   
 
 
 def cweb(f, xmin = 0, xmax = 1, x0=0.1, iterations=50):
@@ -67,7 +43,9 @@ def cweb(f, xmin = 0, xmax = 1, x0=0.1, iterations=50):
     """
 
     # If x0 isn't in the specified interval, stop 
-    if x0 <= xmin or x0 >= xmax: return
+    if x0 <= xmin or x0 >= xmax: 
+        print("x0 is not in the interval")
+        return
     
     plt.figure()
     plt.title("Cobweb Plot for x0 = " + str(x0))
